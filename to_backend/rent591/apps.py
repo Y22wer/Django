@@ -1,8 +1,13 @@
 from django.apps import AppConfig
-
-
-
 from .爬蟲 import House591Spider,JobSpider
+
+from dotenv import load_dotenv
+import os
+
+# 載入 .env 檔案
+load_dotenv()
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
 class Rent591Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -56,8 +61,7 @@ class Rent591Config(AppConfig):
                     print(f"-*-*-*--*-*-*-{ids_to_add}")
                     house_spider.send_telegram(ids_to_add, 
                     'https://rent.591.com.tw/rent-detail-{}.html',
-                    "7860456857:AAEeGAEsSQ1tQuaCjxC4TqkhXs62GCKjsUI",
-                    "5298494709"
+                    TOKEN ,chat_id 
                     )
                     
                 time.sleep(3600)
@@ -101,8 +105,8 @@ class Rent591Config(AppConfig):
                     jobs_spider.send_telegram(
                         ids_to_add, 
                         'https://www.chickpt.com.tw/job-{}',
-                        "7860456857:AAEeGAEsSQ1tQuaCjxC4TqkhXs62GCKjsUI",
-                        "5298494709"
+                        TOKEN,
+                        chat_id 
                     )
 
                 time.sleep(3600)

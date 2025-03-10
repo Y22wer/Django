@@ -60,3 +60,6 @@ target/
 # SQLite database files
 *.sqlite3
 *.db
+
+# Environment variables file
+.env
