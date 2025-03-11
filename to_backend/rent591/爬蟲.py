@@ -46,7 +46,7 @@ class WebSpider:
     def send_telegram(self, ids, url_template, token, chat_id):
         """發送結果至 Telegram"""
         api_url = f"https://api.telegram.org/bot{token}/sendMessage"
-        text = "\n".join([url_template.format(i) for i in ids])
+        text = "\n\n".join([url_template.format(i) for i in ids])
         payload = {
             "chat_id": chat_id,
             "text": text
