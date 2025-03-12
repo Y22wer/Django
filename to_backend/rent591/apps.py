@@ -9,6 +9,8 @@ load_dotenv()
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
+chat_ids = [6165773582,5298494709]
+
 class Rent591Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'rent591'
@@ -59,10 +61,11 @@ class Rent591Config(AppConfig):
                     
                 if ids_to_add:
                     print(f"-*-*-*--*-*-*-{ids_to_add}")
-                    house_spider.send_telegram(ids_to_add, 
-                    'https://rent.591.com.tw/rent-detail-{}.html',
-                    TOKEN ,chat_id 
-                    )
+                    for userid in chat_ids:
+                        house_spider.send_telegram(ids_to_add, 
+                        'https://rent.591.com.tw/rent-detail-{}.html',
+                        TOKEN ,userid 
+                        )
                     
                 time.sleep(3600)
         # 啟動一個背景執行緒來執行爬蟲任務
