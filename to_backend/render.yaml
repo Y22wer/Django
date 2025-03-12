@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: django-backend
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn to_backend.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: backery
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "django-backend.onrender.com"
+      - key: DEBUG
+        value: "False"
+
+databases:
+  - name: django-db
+    plan: free
+    region: oregon

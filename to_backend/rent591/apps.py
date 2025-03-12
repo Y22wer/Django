@@ -15,6 +15,7 @@ class Rent591Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'rent591'
     def ready(self):
+        self.create_SuperUser()
         import threading , time
         from .models import House ,Job
         def run_House591Spider():
@@ -67,7 +68,7 @@ class Rent591Config(AppConfig):
                         TOKEN ,userid 
                         )
                     
-                time.sleep(3600)
+                time.sleep(600)
         # 啟動一個背景執行緒來執行爬蟲任務
         
         def run_JobsSpider():
@@ -90,10 +91,10 @@ class Rent591Config(AppConfig):
                 
                 new_jobs_ids = jobs_spider.search(filter_params[filter_params_index])
                
-                # 獲取資料庫中的所有房屋 ID
+                # 獲取資料庫中的所有工作 ID
                 old_jobs_ids = set(Job.objects.values_list('job_id', flat=True))
 
-                # 找出需要刪除的房屋 ID
+                # 找出需要刪除的工作 ID
                 ids_to_delete = old_jobs_ids - new_jobs_ids
                 Job.objects.filter(job_id__in=ids_to_delete).delete()
                 
@@ -112,7 +113,7 @@ class Rent591Config(AppConfig):
                         chat_id 
                     )
 
-                time.sleep(3600)
+                time.sleep(3000)
         # 啟動一個背景執行緒來執行爬蟲任務
         
         def clean_old():
@@ -131,3 +132,19 @@ class Rent591Config(AppConfig):
         # threading.Thread(target=clean_old, daemon=True).start()
         threading.Thread(target=run_House591Spider, daemon=True).start()
         threading.Thread(target=run_JobsSpider, daemon=True).start()
+    
+    def create_SuperUser(self):
+        import os
+        username = os.getenv("USERNMAE")
+        email = os.getenv("EMAIL")
+        password = os.getenv("PASSWORD")
+        from django.contrib.auth.models import User
+        if User.objects.filter(username=username).exists():
+            print('超級使用者已存在')
+        else:
+            print("開始建立超級使用者")
+            User.objects.create_superuser(username=username, email=email, password=password)
+            print("已經建立完成")
+       
+
+        
