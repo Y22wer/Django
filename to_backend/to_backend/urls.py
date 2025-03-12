@@ -23,8 +23,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 # router.register(r'todos', TodoViewSet, basename='todo')
-
+from django.http import HttpResponse
+def home(request):
+    return HttpResponse("Hello from Render!")
 urlpatterns = [
+    path('', home),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
