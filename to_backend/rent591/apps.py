@@ -106,14 +106,11 @@ class Rent591Config(AppConfig):
                 new_jobs_ids = jobs_spider.search(filter_params[filter_params_index])
                
                 # 獲取資料庫中的所有工作 ID
-                old_jobs_ids = set(Job.objects.values_list('job_id', flat=True))
+                old_jobs_ids = Job.objects.values_list('job_id', flat=True)
 
-                # 找出需要刪除的工作 ID
-                ids_to_delete = old_jobs_ids - new_jobs_ids
-                Job.objects.filter(job_id__in=ids_to_delete).delete()
+                ids_to_delete , ids_to_add=find_diff_elements_np(old_jobs_ids, new_jobs_ids)
                 
-                # 找出需要新增的房屋 ID
-                ids_to_add = new_jobs_ids - old_jobs_ids
+                Job.objects.filter(job_id__in=ids_to_delete).delete()
                 
                 # 新增新的房屋 ID 到資料庫
                 for job_id in ids_to_add:
