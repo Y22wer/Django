@@ -76,7 +76,7 @@ class Rent591Config(AppConfig):
                 for house_id in ids_to_add:
                     House.objects.create(house_id=house_id)
                     
-                if ids_to_add:
+                if ids_to_add.size > 0:
                     print(f"-*-*-*--*-*-*-{ids_to_add}")
                     house_spider.send_telegram(ids_to_add, 
                     'https://rent.591.com.tw/rent-detail-{}.html',
@@ -116,7 +116,7 @@ class Rent591Config(AppConfig):
                 for job_id in ids_to_add:
                     Job.objects.create(job_id=job_id)
                     
-                if ids_to_add:
+                if ids_to_add.size > 0:
                     jobs_spider.send_telegram(
                         ids_to_add, 
                         'https://www.chickpt.com.tw/job-{}',
