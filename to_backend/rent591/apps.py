@@ -14,19 +14,19 @@ class Rent591Config(AppConfig):
             filter_params = [
                 {
                 "region":"3",
-                "kind":"2",#房屋種類
-                "price":"0_9999",
+                "kind":"2",
+                "price":"0$_9999",
                 "notice" : "boy,all_sex"
                 },
                 {
                 "region":"3",
-                "kind":"3",#房屋種類
-                "price":"0_9999",
+                "kind":"3",
+                "price":"0$_9999",
                 "notice" : "boy,all_sex"
                 }
                 ]
             sort_params = {
-                'sort': 'money_asc'  # 租金由高到低排序
+                'sort': 'money_asc' 
             }
 
             filter_params_index=len(filter_params)
@@ -57,7 +57,7 @@ class Rent591Config(AppConfig):
                     'https://rent.591.com.tw/rent-detail-{}.html',
                     TOKEN ,CHANNEL_ID  )
                     
-                time.sleep(600)
+                time.sleep(1200)
         # 啟動一個背景執行緒來執行爬蟲任務
         
         def run_JobsSpider():

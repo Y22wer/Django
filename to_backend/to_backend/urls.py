@@ -24,6 +24,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 router = DefaultRouter()
 # router.register(r'todos', TodoViewSet, basename='todo')
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def home(request):
     return HttpResponse("Hello from Render!")
 urlpatterns = [
