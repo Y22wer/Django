@@ -1,6 +1,34 @@
 from django.apps import AppConfig
 from .爬蟲 import House591Spider,JobSpider
 from to_backend.settings import TOKEN ,CHANNEL_ID
+import numpy as np
+def find_diff_elements_np(list1, list2):
+    """
+    使用 NumPy 找出兩個串列的不同元素，並保持順序和速度。
+
+    Args:
+        list1: 第一個串列。
+        list2: 第二個串列。
+
+    Returns:
+        一個包含兩個 NumPy 陣列的元組：
+            - 第一個陣列包含串列 1 有而串列 2 沒有的元素。
+            - 第二個陣列包含串列 2 有而串列 1 沒有的元素。
+    """
+
+    arr1 = np.array(list1)
+    arr2 = np.array(list2)
+
+    # 找出串列 1 有而串列 2 沒有的元素
+    mask1 = np.isin(arr1, arr2, invert=True)
+    diff1 = arr1[mask1]
+
+    # 找出串列 2 有而串列 1 沒有的元素
+    mask2 = np.isin(arr2, arr1, invert=True)
+    diff2 = arr2[mask2]
+
+    return diff1, diff2
+
 
 class Rent591Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -38,14 +66,11 @@ class Rent591Config(AppConfig):
                 new_house_ids = house_spider.search(filter_params[filter_params_index], sort_params)
                
                 # 獲取資料庫中的所有房屋 ID
-                old_house_ids = set(House.objects.values_list('house_id', flat=True))
+                old_house_ids = House.objects.values_list('house_id', flat=True)
 
-                # 找出需要刪除的房屋 ID
-                ids_to_delete = old_house_ids - new_house_ids
-                House.objects.filter(house_id__in=ids_to_delete).delete()
+                ids_to_delete , ids_to_add=find_diff_elements_np(old_house_ids, new_house_ids)
                 
-                # 找出需要新增的房屋 ID
-                ids_to_add = new_house_ids - old_house_ids
+                House.objects.filter(house_id__in=ids_to_delete).delete()
                 
                 # 新增新的房屋 ID 到資料庫
                 for house_id in ids_to_add:
