@@ -1,15 +1,6 @@
 from django.apps import AppConfig
 from .爬蟲 import House591Spider,JobSpider
-
-from dotenv import load_dotenv
-import os
-
-# 載入 .env 檔案
-load_dotenv()
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-chat_id = os.getenv("TELEGRAM_CHAT_ID")
-
-chat_ids = [6165773582,5298494709]
+from to_backend.settings import TOKEN ,CHANNEL_ID
 
 class Rent591Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -24,13 +15,13 @@ class Rent591Config(AppConfig):
                 {
                 "region":"3",
                 "kind":"2",#房屋種類
-                "price":"0_5000,5000_9999",
-                "notice" : "boy,money_asc"
+                "price":"0_9999",
+                "notice" : "boy,all_sex"
                 },
                 {
                 "region":"3",
                 "kind":"3",#房屋種類
-                "price":"0_5000,5000_9999",
+                "price":"0_9999",
                 "notice" : "boy,all_sex"
                 }
                 ]
@@ -62,11 +53,9 @@ class Rent591Config(AppConfig):
                     
                 if ids_to_add:
                     print(f"-*-*-*--*-*-*-{ids_to_add}")
-                    for userid in chat_ids:
-                        house_spider.send_telegram(ids_to_add, 
-                        'https://rent.591.com.tw/rent-detail-{}.html',
-                        TOKEN ,userid 
-                        )
+                    house_spider.send_telegram(ids_to_add, 
+                    'https://rent.591.com.tw/rent-detail-{}.html',
+                    TOKEN ,CHANNEL_ID  )
                     
                 time.sleep(600)
         # 啟動一個背景執行緒來執行爬蟲任務
@@ -110,26 +99,12 @@ class Rent591Config(AppConfig):
                         ids_to_add, 
                         'https://www.chickpt.com.tw/job-{}',
                         TOKEN,
-                        chat_id 
+                        5298494709 
                     )
 
                 time.sleep(3000)
         # 啟動一個背景執行緒來執行爬蟲任務
         
-        def clean_old():
-            old_house_ids = set(House.objects.values_list('house_id', flat=True))
-            import requests
-            while True:
-                time.sleep(12*3600)
-                for i in old_house_ids:
-                    url = f"https://rent.591.com.tw/rent-detail-{i}.html\n"
-                    statuscode =requests.get(url).status_code
-                    if statuscode    != 200:
-                        House.objects.filter(house_id=i).delete()
-                    elif statuscode == 405:
-                        print(f"house_id {i} is 405")
-
-        # threading.Thread(target=clean_old, daemon=True).start()
         threading.Thread(target=run_House591Spider, daemon=True).start()
         threading.Thread(target=run_JobsSpider, daemon=True).start()
     

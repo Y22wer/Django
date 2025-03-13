@@ -48,7 +48,7 @@ class WebSpider:
         api_url = f"https://api.telegram.org/bot{token}/sendMessage"
         text = "\n\n".join([url_template.format(i) for i in ids])
         payload = {
-            "chat_id": chat_id,
+            "chat_id": chat_id, #頻道ID
             "text": text
         }
         requests.post(api_url, data=payload)
