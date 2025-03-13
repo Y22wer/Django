@@ -71,10 +71,10 @@ class Rent591Config(AppConfig):
                 ids_to_delete , ids_to_add=find_diff_elements_np(old_house_ids, new_house_ids)
                 
                 House.objects.filter(house_id__in=ids_to_delete).delete()
-                
+        
                 # 新增新的房屋 ID 到資料庫
                 for house_id in ids_to_add:
-                    House.objects.create(house_id=house_id)
+                    House.objects.get_or_create(house_id=house_id)
                     
                 if ids_to_add.size > 0:
                     print(f"-*-*-*--*-*-*-{ids_to_add}")
@@ -114,7 +114,7 @@ class Rent591Config(AppConfig):
                 
                 # 新增新的房屋 ID 到資料庫
                 for job_id in ids_to_add:
-                    Job.objects.create(job_id=job_id)
+                    Job.objects.get_or_create(job_id=job_id)
                     
                 if ids_to_add.size > 0:
                     jobs_spider.send_telegram(

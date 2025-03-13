@@ -22,7 +22,6 @@ class WebSpider:
           href = link['href']
           if match := self.pattern.search(href):
             item_id = match.group(1)
-            print(f"房屋ID {item_id}")
             ids.append(item_id)
         print(f"分頁ID {ids}")
         return ids
