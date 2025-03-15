@@ -6,19 +6,21 @@ from typing import List
 import concurrent.futures
 
 class WebSpider:
-    def __init__(self, base_url, pattern, headers=None):
+    def __init__(self, base_url, pattern,class_selector,paginator_selector=None ,headers=None):
         """初始化 session、headers、目標網址和正則表達式"""
         self.session = requests.Session()
         self.base_url = base_url
         self.pattern = re.compile(pattern)
+        self.paginator_selector = paginator_selector or 'div.paginator-container' 
+        self.class_selector = class_selector
         self.headers = headers or {
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
         }
-
+        
     def get_single_page_ids(self, soup) -> List[str]:
         """解析HTML並提取所有房屋 ID"""
         ids = []
-        for link in soup.find_all('a', href=True,class_='link v-middle'):
+        for link in soup.find_all('a', href=True,class_=self.class_selector):
           href = link['href']
           if match := self.pattern.search(href):
             item_id = match.group(1)
@@ -67,7 +69,10 @@ class WebSpider:
         """解析HTML並提取所有頁碼的href連結"""
         page_links = [base_url]
         soup=self.getBS4(base_url)
-        paginator = soup.find('div', class_='paginator-container')  # 找到分頁容器
+        if self.paginator_selector is None:
+            paginator = soup.find('div', class_='paginator-container')
+        else:
+            paginator = soup.select_one(self.paginator_selector) 
 
         if paginator:
             links = paginator.find_all('a', href=True)  # 找到所有href的a標籤
@@ -97,6 +102,7 @@ class WebSpider:
 class House591Spider(WebSpider):
     def __init__(self):
         super().__init__(
+            class_selector= 'link v-middle',
             base_url='https://rent.591.com.tw/list',
             pattern=r'https://rent\.591\.com\.tw/(\d+)'
         )
@@ -105,6 +111,8 @@ class House591Spider(WebSpider):
 class JobSpider(WebSpider):
     def __init__(self):
         super().__init__(
+            paginator_selector='ul.pagination',
+            class_selector="layout-width job-list-item is-flex flex-start flex-row flex-align-center is-tra",
             base_url='https://www.chickpt.com.tw/',
             pattern=r'https://www\.chickpt\.com\.tw/job-([a-zA-Z0-9]+)'
         )
